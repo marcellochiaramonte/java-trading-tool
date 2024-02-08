@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class ReturnObject {
+public class Result {
 
     String instrumentName;
     String operation;
