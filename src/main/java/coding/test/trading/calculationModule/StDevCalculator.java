@@ -3,20 +3,27 @@ package coding.test.trading.calculationModule;
 import coding.test.trading.model.Instrument;
 import coding.test.trading.service.CsvParserService;
 import coding.test.trading.service.DateUtils;
+import coding.test.trading.service.InstrumentModifierCache;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 
 @NoArgsConstructor
 @Getter
+@Service
 public class StDevCalculator {
+
+    @Autowired
+    private InstrumentModifierCache instrumentModifierCache;
 
     private Integer count = 0;
     private Double mean = 0.0;
     private Double dSquared = 0.0;
 
-    public static StDevCalculator calculate(String instrumentName, LocalDate startDate, LocalDate endDate) {
+    public StDevCalculator calculate(String instrumentName, LocalDate startDate, LocalDate endDate) {
 
         StDevCalculator calculator = new StDevCalculator();
 
@@ -24,6 +31,7 @@ public class StDevCalculator {
                 .filter(i -> i.getInstrumentId().equals(instrumentName))
                 .filter(i -> DateUtils.dateIsBetween(i.getLocalDate(), startDate, endDate))
                 .mapToDouble(Instrument::getInstrumentValue)
+                .map(value -> value * instrumentModifierCache.getInstrumentPriceModifier(instrumentName))
                 .forEach(calculator::update);
 
         return calculator;

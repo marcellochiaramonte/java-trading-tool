@@ -23,7 +23,12 @@ public class Controller {
     @Autowired
     private MeanCalculationModule meanCalculationModule;
 
-    @GetMapping("/api/types")
+    @Autowired
+    private StDevCalculator stDevCalculator;
+
+
+
+    @GetMapping("/api/modifiers")
     private List<InstrumentPriceModifier> getAllModifiers(){
         return (List<InstrumentPriceModifier>) repository.findAll();
     }
@@ -35,17 +40,6 @@ public class Controller {
 
     @GetMapping("/api/results")
     private List<Result> getResults() {
-
-        // Save some instrument modifiers to the H2 DB
-        repository.saveAll(
-                List.of(
-                        new InstrumentPriceModifier(1, "INSTRUMENT1", 1.0452),
-                        new InstrumentPriceModifier(2, "INSTRUMENT2", 15.65458),
-                        new InstrumentPriceModifier(3, "INSTRUMENT3", 3.14)
-                )
-        );
-
-
         // INSTRUMENT1
         long startTime = System.nanoTime();
         Double mean1 = meanCalculationModule.calculateMeanValue(
@@ -71,7 +65,7 @@ public class Controller {
 
         // INSTRUMENT3
         startTime = System.nanoTime();
-        StDevCalculator calculatedResults = StDevCalculator.calculate(
+        StDevCalculator calculatedResults = stDevCalculator.calculate(
                 "INSTRUMENT3",
                 LocalDate.of(1996, 1, 1),
                 LocalDate.of(2014, 12, 19)
@@ -79,6 +73,8 @@ public class Controller {
         endTime = System.nanoTime();
 
         Long duration3 = (endTime - startTime) / 1_000_000;  //divide by 1_000_000 to get milliseconds.
+
+//        OtherCalculations.AddLast10Elements();
 
 
         return List.of(

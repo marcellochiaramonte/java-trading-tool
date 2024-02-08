@@ -22,6 +22,7 @@ public class CsvParserService {
 
         Stream<Instrument> instrumentStream = Stream.of();
 
+        // Todo: using 'try'-with-resources statement closes the stream before being able to return it
         try {
             instrumentStream = Files.lines(Path.of("src/main/resources/example_input.txt"))
                     .parallel()
