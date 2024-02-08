@@ -1,12 +1,7 @@
 package coding.test.trading;
 
-import coding.test.trading.model.Instrument;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @SpringBootApplication
 public class TradingApplication {
