@@ -1,9 +1,11 @@
 package coding.test.trading;
 
 import coding.test.trading.calculationModule.MeanCalculationModule;
+import coding.test.trading.calculationModule.Sum10Calculator;
 import coding.test.trading.calculationModule.StDevCalculator;
 import coding.test.trading.model.Instrument;
 import coding.test.trading.model.InstrumentPriceModifier;
+import coding.test.trading.model.OtherInstrumentsMap;
 import coding.test.trading.model.Result;
 import coding.test.trading.repository.InstrumentPriceModifierRepository;
 import coding.test.trading.service.CsvParserService;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 public class Controller {
@@ -25,6 +28,9 @@ public class Controller {
 
     @Autowired
     private StDevCalculator stDevCalculator;
+
+    @Autowired
+    private Sum10Calculator sum10Calculator;
 
 
 
@@ -74,27 +80,43 @@ public class Controller {
 
         Long duration3 = (endTime - startTime) / 1_000_000;  //divide by 1_000_000 to get milliseconds.
 
-//        OtherCalculations.AddLast10Elements();
+
+        // OTHER INSTRUMENTS
+        startTime = System.nanoTime();
+        List<OtherInstrumentsMap> sum4 = sum10Calculator.sumOtherInstruments();
+        AtomicReference<String> s = new AtomicReference<>("");
+        sum4.forEach(e->{
+            s.set(s + e.toString());
+        });
+        endTime = System.nanoTime();
+
+        Long duration4 = (endTime - startTime) / 1_000_000;  //divide by 1_000_000 to get milliseconds.
 
 
         return List.of(
                 new Result(
                         "INSTRUMENT1",
                         "Mean over all time",
-                        mean1,
+                        mean1.toString(),
                         duration1
                 ),
                 new Result(
                         "INSTRUMENT2",
                         "Mean on November 2014",
-                        mean2,
+                        mean2.toString(),
                         duration2
                 ),
                 new Result(
                         "INSTRUMENT3",
                         "Std Deviation on all time",
-                        calculatedResults.getPopulationStandardDeviation(),
+                        calculatedResults.getPopulationStandardDeviation().toString(),
                         duration3
+                ),
+                new Result(
+                        "OTHER_INSTRUMENTS",
+                        "Sum the 10 most recent ones",
+                        sum4.toString(),
+                        duration4
                 )
         );
     }

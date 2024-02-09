@@ -11,7 +11,7 @@ public class Result {
 
     String instrumentName;
     String operation;
-    Double result;
+    String result;
     Long processingTimeMs;
 
 }
